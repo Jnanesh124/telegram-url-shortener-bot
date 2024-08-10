@@ -1,11 +1,11 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
+from bs4 import BeautifulSoup
 import requests
 
 # Replace with your credentials and API details
 TELEGRAM_BOT_TOKEN = '6304912519:AAFS77ckUAENSMcKxxlibKNeUNTIKIAV-W4'
-SHORTENING_SERVICE_API_URL = 'https://api.your-url-shortening-service.com/shorten'
-API_KEY = 'your_api_key'
+BLOGGER_URL = 'https://rockers-disc-link.blogspot.com/p/safelink-generator.html'
 
 async def start(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text('Send me a URL to shorten!')
@@ -16,27 +16,28 @@ async def shorten_url(update: Update, context: CallbackContext) -> None:
         await update.message.reply_text('Please send a URL to shorten.')
         return
 
-    # Shorten URL using an external URL shortening service
     try:
-        # Log the request for debugging
-        print(f"Requesting to shorten URL: {url}")
+        # Use BeautifulSoup to scrape the Blogger page
+        response = requests.get(BLOGGER_URL)
+        soup = BeautifulSoup(response.text, 'html.parser')
 
-        response = requests.post(
-            SHORTENING_SERVICE_API_URL,
-            json={
-                'url': url,
-                'api_key': API_KEY
-            }
-        )
-        response.raise_for_status()  # Raise an error for bad responses
+        # Assuming the form action URL and parameters are needed for submission
+        # You will need to update this with the correct form parameters and URLs
+        form_action = soup.find('form')['action']
+        form_data = {
+            'url': url,  # Adjust the form data key based on actual form fields
+        }
 
-        # Log the response for debugging
-        print(f"API Response: {response.json()}")
+        # Submit the URL to the Blogger page
+        submit_response = requests.post(form_action, data=form_data)
+        submit_soup = BeautifulSoup(submit_response.text, 'html.parser')
 
-        data = response.json()
-        shortened_url = data.get('shortened_url', 'URL shortening failed.')
+        # Extract the shortened URL from the response
+        # You need to update this based on where the shortened URL is located
+        shortened_url = submit_soup.find('a', {'class': 'shortened-url-class'})['href']
         await update.message.reply_text(f'Shortened URL: {shortened_url}')
-    except requests.RequestException as e:
+
+    except Exception as e:
         await update.message.reply_text(f'Error: {e}')
 
 def main() -> None:
