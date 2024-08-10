@@ -3,10 +3,10 @@ from telegram.ext import Updater, CommandHandler, CallbackContext
 import requests
 
 # Replace with your credentials
-TELEGRAM_BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
-BLOGGER_API_KEY = 'YOUR_BLOGGER_API_KEY'
-BLOG_ID = 'YOUR_BLOG_ID'
-BLOGGER_API_URL = f'https://www.googleapis.com/blogger/v3/blogs/{BLOG_ID}/posts/'
+TELEGRAM_BOT_TOKEN = '6304912519:AAFS77ckUAENSMcKxxlibKNeUNTIKIAV-W4'
+BLOGGER_API_KEY = 'AIzaSyAScLWfhhWU0KqeUlRaFtYaNy_yjITJUdI'
+BLOG_ID = '215564800976830378'
+BLOGGER_API_URL = f'https://www.googleapis.com/blogger/v3/blogs/{215564800976830378}/posts/'
 
 def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Send me a URL to shorten!')
