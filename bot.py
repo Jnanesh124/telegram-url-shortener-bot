@@ -4,8 +4,8 @@ import requests
 
 # Replace with your credentials and API details
 TELEGRAM_BOT_TOKEN = '6304912519:AAFS77ckUAENSMcKxxlibKNeUNTIKIAV-W4'
-SHORTENING_SERVICE_API_URL = 'https://rockers-disc-link.blogspot.com/p/safelink-generator.html'
-API_KEY = 'AIzaSyAScLWfhhWU0KqeUlRaFtYaNy_yjITJUdI'
+SHORTENING_SERVICE_API_URL = 'https://api.your-url-shortening-service.com/shorten'
+API_KEY = 'your_api_key'
 
 async def start(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text('Send me a URL to shorten!')
@@ -18,6 +18,9 @@ async def shorten_url(update: Update, context: CallbackContext) -> None:
 
     # Shorten URL using an external URL shortening service
     try:
+        # Log the request for debugging
+        print(f"Requesting to shorten URL: {url}")
+
         response = requests.post(
             SHORTENING_SERVICE_API_URL,
             json={
@@ -26,6 +29,9 @@ async def shorten_url(update: Update, context: CallbackContext) -> None:
             }
         )
         response.raise_for_status()  # Raise an error for bad responses
+
+        # Log the response for debugging
+        print(f"API Response: {response.json()}")
 
         data = response.json()
         shortened_url = data.get('shortened_url', 'URL shortening failed.')
