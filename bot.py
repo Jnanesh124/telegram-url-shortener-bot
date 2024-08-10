@@ -34,7 +34,7 @@ def shorten_url(update: Update, context: CallbackContext) -> None:
         update.message.reply_text('Failed to shorten URL.')
 
 def main() -> None:
-    updater = Updater(TELEGRAM_BOT_TOKEN)
+    updater = Updater(6304912519:AAFS77ckUAENSMcKxxlibKNeUNTIKIAV-W4)
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler("start", start))
