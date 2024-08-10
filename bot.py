@@ -4,9 +4,8 @@ import requests
 
 # Replace with your credentials
 TELEGRAM_BOT_TOKEN = '6304912519:AAFS77ckUAENSMcKxxlibKNeUNTIKIAV-W4'
-BLOGGER_API_KEY = 'AIzaSyAScLWfhhWU0KqeUlRaFtYaNy_yjITJUdI'
-BLOG_ID = '215564800976830378'
-BLOGGER_API_URL = f'https://www.googleapis.com/blogger/v3/blogs/{BLOG_ID}/posts/'
+SHORTENING_SERVICE_API_URL = 'https://api.your-url-shortening-service.com/shorten'
+API_KEY = 'AIzaSyAScLWfhhWU0KqeUlRaFtYaNy_yjITJUdI'
 
 async def start(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text('Send me a URL to shorten!')
@@ -17,19 +16,18 @@ async def shorten_url(update: Update, context: CallbackContext) -> None:
         await update.message.reply_text('Please send a URL to shorten.')
         return
 
-    # Shorten URL using Blogger API
+    # Shorten URL using an external URL shortening service
     response = requests.post(
-        BLOGGER_API_URL,
-        params={'key': BLOGGER_API_KEY},
+        SHORTENING_SERVICE_API_URL,
         json={
-            'title': 'Shortened URL',
-            'content': f'<a href="{url}">{url}</a>'
+            'url': url,
+            'api_key': API_KEY
         }
     )
 
     if response.status_code == 200:
-        # Note: Blogger API response may not contain 'url'. Adjust accordingly.
-        shortened_url = response.json().get('url', 'URL shortening failed.')
+        data = response.json()
+        shortened_url = data.get('shortened_url', 'URL shortening failed.')
         await update.message.reply_text(f'URL shortened: {shortened_url}')
     else:
         await update.message.reply_text('Failed to shorten URL.')
