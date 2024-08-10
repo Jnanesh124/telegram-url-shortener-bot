@@ -1,5 +1,5 @@
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import Application, CommandHandler, CallbackContext
 import requests
 
 # Replace with your credentials
@@ -8,13 +8,13 @@ BLOGGER_API_KEY = 'AIzaSyAScLWfhhWU0KqeUlRaFtYaNy_yjITJUdI'
 BLOG_ID = '215564800976830378'
 BLOGGER_API_URL = f'https://www.googleapis.com/blogger/v3/blogs/{BLOG_ID}/posts/'
 
-def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('Send me a URL to shorten!')
+async def start(update: Update, context: CallbackContext) -> None:
+    await update.message.reply_text('Send me a URL to shorten!')
 
-def shorten_url(update: Update, context: CallbackContext) -> None:
+async def shorten_url(update: Update, context: CallbackContext) -> None:
     url = ' '.join(context.args)
     if not url:
-        update.message.reply_text('Please send a URL to shorten.')
+        await update.message.reply_text('Please send a URL to shorten.')
         return
 
     # Shorten URL using Blogger API
@@ -29,22 +29,19 @@ def shorten_url(update: Update, context: CallbackContext) -> None:
 
     if response.status_code == 200:
         # Note: Blogger API response may not contain 'url'. Adjust accordingly.
-        # This is a placeholder and may need adjustment based on actual Blogger API response.
         shortened_url = response.json().get('url', 'URL shortening failed.')
-        update.message.reply_text(f'URL shortened: {shortened_url}')
+        await update.message.reply_text(f'URL shortened: {shortened_url}')
     else:
-        update.message.reply_text('Failed to shorten URL.')
+        await update.message.reply_text('Failed to shorten URL.')
 
 def main() -> None:
-    # Initialize Updater with the bot token
-    updater = Updater(TELEGRAM_BOT_TOKEN)
-    dispatcher = updater.dispatcher
+    # Initialize Application with the bot token
+    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
 
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("shorten", shorten_url))
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("shorten", shorten_url))
 
-    updater.start_polling()
-    updater.idle()
+    application.run_polling()
 
 if __name__ == '__main__':
     main()
