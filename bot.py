@@ -6,7 +6,7 @@ import requests
 TELEGRAM_BOT_TOKEN = '6304912519:AAFS77ckUAENSMcKxxlibKNeUNTIKIAV-W4'
 BLOGGER_API_KEY = 'AIzaSyAScLWfhhWU0KqeUlRaFtYaNy_yjITJUdI'
 BLOG_ID = '215564800976830378'
-BLOGGER_API_URL = f'https://www.googleapis.com/blogger/v3/blogs/{215564800976830378}/posts/'
+BLOGGER_API_URL = f'https://www.googleapis.com/blogger/v3/blogs/{BLOG_ID}/posts/'
 
 def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Send me a URL to shorten!')
@@ -28,13 +28,16 @@ def shorten_url(update: Update, context: CallbackContext) -> None:
     )
 
     if response.status_code == 200:
-        shortened_url = response.json().get('url')
+        # Note: Blogger API response may not contain 'url'. Adjust accordingly.
+        # This is a placeholder and may need adjustment based on actual Blogger API response.
+        shortened_url = response.json().get('url', 'URL shortening failed.')
         update.message.reply_text(f'URL shortened: {shortened_url}')
     else:
         update.message.reply_text('Failed to shorten URL.')
 
 def main() -> None:
-    updater = Updater(6304912519:AAFS77ckUAENSMcKxxlibKNeUNTIKIAV-W4)
+    # Initialize Updater with the bot token
+    updater = Updater(TELEGRAM_BOT_TOKEN)
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler("start", start))
