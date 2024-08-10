@@ -2,9 +2,9 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
 import requests
 
-# Replace with your credentials
+# Replace with your credentials and API details
 TELEGRAM_BOT_TOKEN = '6304912519:AAFS77ckUAENSMcKxxlibKNeUNTIKIAV-W4'
-SHORTENING_SERVICE_API_URL = 'https://api.your-url-shortening-service.com/shorten'
+SHORTENING_SERVICE_API_URL = 'https://rockers-disc-link.blogspot.com/p/safelink-generator.html'
 API_KEY = 'AIzaSyAScLWfhhWU0KqeUlRaFtYaNy_yjITJUdI'
 
 async def start(update: Update, context: CallbackContext) -> None:
@@ -17,20 +17,21 @@ async def shorten_url(update: Update, context: CallbackContext) -> None:
         return
 
     # Shorten URL using an external URL shortening service
-    response = requests.post(
-        SHORTENING_SERVICE_API_URL,
-        json={
-            'url': url,
-            'api_key': API_KEY
-        }
-    )
+    try:
+        response = requests.post(
+            SHORTENING_SERVICE_API_URL,
+            json={
+                'url': url,
+                'api_key': API_KEY
+            }
+        )
+        response.raise_for_status()  # Raise an error for bad responses
 
-    if response.status_code == 200:
         data = response.json()
         shortened_url = data.get('shortened_url', 'URL shortening failed.')
-        await update.message.reply_text(f'URL shortened: {shortened_url}')
-    else:
-        await update.message.reply_text('Failed to shorten URL.')
+        await update.message.reply_text(f'Shortened URL: {shortened_url}')
+    except requests.RequestException as e:
+        await update.message.reply_text(f'Error: {e}')
 
 def main() -> None:
     # Initialize Application with the bot token
