@@ -20,16 +20,22 @@ async def shorten_url(update: Update, context: CallbackContext) -> None:
         # Fetch the Blogger page
         response = requests.get(BLOGGER_URL)
         response.raise_for_status()
-        
+
         # Parse the page with BeautifulSoup
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Find the form action URL (assuming it's available)
-        form_action = soup.find('form')['action']
-        if not form_action:
-            await update.message.reply_text('Form action URL not found.')
+        # Find the form action URL
+        form = soup.find('form')
+        if form:
+            form_action = form['action']
+        else:
+            await update.message.reply_text('Form not found on the page.')
             return
-        
+
+        # If form_action is relative, convert to absolute URL
+        if not form_action.startswith('http'):
+            form_action = requests.compat.urljoin(BLOGGER_URL, form_action)
+
         # Prepare form data
         form_data = {
             'url': url,  # Adjust this key according to the form field name
@@ -42,8 +48,8 @@ async def shorten_url(update: Update, context: CallbackContext) -> None:
         # Parse the response for the shortened URL
         submit_soup = BeautifulSoup(submit_response.text, 'html.parser')
         # Update this selector based on where the shortened URL is located
-        shortened_url_tag = submit_soup.find('a', {'class': 'shortened-url-class'})
-        
+        shortened_url_tag = submit_soup.find('a', {'class': 'shortened-url-class'})  # Adjust this selector
+
         if shortened_url_tag:
             shortened_url = shortened_url_tag['href']
             await update.message.reply_text(f'Shortened URL: {shortened_url}')
